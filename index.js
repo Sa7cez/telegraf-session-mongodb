@@ -21,12 +21,17 @@ class TelegrafMongoSession {
         // if ctx has chat object, we use chat.id
         // if ctx has callbackquery object, we use cb.chat_instance
         // if ctx does not have any of the fields mentioned above, we use from.id
-        const { chat, callbackQuery, from } = ctx;
+        const { chat, callbackQuery, from, update } = ctx;
 
         if (chat && chat.type === 'channel' && !from) {
             return `ch:${chat.id}`;
         }
 
+        if (update && update.poll_answer && update.poll_answer.user) {
+            const id = update.poll_answer.user.id
+            return `${id}:${id}`;
+        }
+        
         const id = chat ? chat.id : (callbackQuery ? callbackQuery.chat_instance : from.id);
         return `${id}:${from.id}`;
     }
